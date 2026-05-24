@@ -51,12 +51,14 @@ app.get('*', (req, res) => {
 });
 
 // Start Express Server
-
+/*
 app.listen(PORT, () => {
   console.log(`================================================================`);
   console.log(`[Server] AI Exit Exam Prep Server running on port ${PORT}`);
   console.log(`[Server] Local URL: http://localhost:${PORT}`);
   console.log(`================================================================`);
 });
+*/
+
 module.exports = app;
 
