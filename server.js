@@ -3,15 +3,15 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 require('dotenv').config();
 
-// Initialize express app
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// Import database to trigger self-healing database checking and setup
+// Import DB safely
+const db = require('./config/db');
+
 try {
-  require('./config/db');
+  db.init();
 } catch (err) {
-  console.log("DB init skipped in serverless:", err.message);
+  console.log("DB init skipped:", err.message);
 }
 
 // Middlewares
@@ -19,16 +19,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Serve static assets from public folder
+// Static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Mount API Routes
+// Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/exam', require('./routes/exam'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/ai', require('./routes/ai'));
 
-// Elegant SaaS-like page mappings (avoids exposing .html extension)
+// Pages
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -49,20 +49,9 @@ app.get('/exam', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'exam.html'));
 });
 
-// Wildcard route to redirect unknown paths back to landing page
+// fallback
 app.get('*', (req, res) => {
   res.redirect('/');
 });
 
-// Start Express Server
-/*
-app.listen(PORT, () => {
-  console.log(`================================================================`);
-  console.log(`[Server] AI Exit Exam Prep Server running on port ${PORT}`);
-  console.log(`[Server] Local URL: http://localhost:${PORT}`);
-  console.log(`================================================================`);
-});
-*/
-
 module.exports = app;
-

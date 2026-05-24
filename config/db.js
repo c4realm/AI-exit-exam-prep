@@ -77,9 +77,21 @@ async function initializeDatabase() {
 }
 
 // Immediately trigger initialization
-initializeDatabase();
+let initialized = false;
+
+async function safeInit() {
+  if (initialized) return;
+  initialized = true;
+
+  try {
+    await initializeDatabase();
+  } catch (err) {
+    console.log('[Database] Init skipped (safe mode):', err.message);
+  }
+}
 
 module.exports = {
   query: (text, params) => pool.query(text, params),
-  pool: () => pool
+  pool: () => pool,
+  init: safeInit
 };
