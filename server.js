@@ -8,7 +8,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Import database to trigger self-healing database checking and setup
-const db = require('./config/db');
+try {
+  require('./config/db');
+} catch (err) {
+  console.log("DB init skipped in serverless:", err.message);
+}
 
 // Middlewares
 app.use(express.json());
